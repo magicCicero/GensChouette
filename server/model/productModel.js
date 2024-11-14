@@ -14,7 +14,7 @@ exports.addProduct = async (req) => {
 
 exports.getProductByUserID = async (req) => {
     const connect = await runQuery();
-    const [rows, fields] = await connect.query('SELECT * FROM product WHERE userID = ? AND status = 0', [req.body.userID.userID]);
+    const [rows, fields] = await connect.query('SELECT * FROM product WHERE userID = ? AND status = 0', [req.body.userID]);
     if (rows.length === 0) {
         return [];
     } else {
