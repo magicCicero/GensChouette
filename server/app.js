@@ -30,11 +30,12 @@ app.use(proudctRouter);
 app.use(sellRouter);
 
 // Amazon Payment
+require('dotenv').config();
 const amazonPay = AmazonPayments.connect({
-  sellerId: "MERCHANT_ID",
-  mwsAccessKey: "ACCESS_KEY",
-  mwsSecretKey: "SECRET_KEY",
-  clientId: "Client_ID",
+  sellerId: process.env.SELLER_ID,
+  mwsAccessKey: process.env.MWS_ACCESS_KEY,
+  mwsSecretKey: process.env.MWS_SECRET_KEY,
+  clientId: process.env.CLIENT_ID,
   region: "jp",
 });
 
