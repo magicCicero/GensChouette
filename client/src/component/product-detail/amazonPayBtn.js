@@ -8,7 +8,7 @@ const AmazonPayButton = ({amount}) => {
         if (window.amazon) {
             console.log("Amazon Pay SDK loaded");
             window.onAmazonLoginReady = function () {
-                amazon.Login.setClientId('YOUR_CLIENT_ID'); // Your Amazon Pay Client ID
+                amazon.Login.setClientId(process.env.REACT_APP_AMAZON_PAY_CLIENT_ID); // Your Amazon Pay Client ID
             };
 
             // Render the Amazon Pay button
