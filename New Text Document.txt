@@ -1,0 +1,2 @@
+1. add radio group on reg_modal + update regUser in authModel.js
+2. userID = Cookies.get("userID") in pro_table, sell_table for getData()

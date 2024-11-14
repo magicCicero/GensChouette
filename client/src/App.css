@@ -1,0 +1,36 @@
+:root {
+  --primary: #09186A;
+  --secondary: #EEE9DC;
+  --info: #2196f3;
+  --purple: #491E4B;
+  --gray: #cecece;
+  --dark-gray: #5B5B5B;
+  --dark: #373737;
+}
+
+a {
+  text-decoration: none !important;
+}
+
+.slick-prev,
+.slick-next {
+  display: none !important;
+}
+
+body {
+  font-family: "Noto Sans JP", sans-serif !important;
+}
+
+.primary-font {
+  font-family: "Noto Sans JP", sans-serif !important;
+  font-optical-sizing: auto !important;
+  font-style: normal !important;
+}
+
+fieldset {
+  border: none !important;
+  border-bottom: 1px solid gray !important;
+  border-radius: 0px !important;
+  height: 50px;
+  width: calc(100% - 20px);
+}
