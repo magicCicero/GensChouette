@@ -4,3 +4,4 @@
 ------------------------------------------------------------------------ 2024.11.14.12:00
 1. add amazonpaybutton on productdetail.js, add sdk on index.html
 2. some update on app.js serverside
+3. add .env for both sides
