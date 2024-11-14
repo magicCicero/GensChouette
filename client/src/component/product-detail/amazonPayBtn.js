@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 
-const AmazonPayButton = () => {
+const AmazonPayButton = ({amount}) => {
     useEffect(() => {
         // Check if the amazon object is available
         if (window.amazon) {
@@ -32,7 +32,7 @@ const AmazonPayButton = () => {
     const handlePayment = async (orderReferenceId) => {
         const orderData = {
             orderReferenceId: orderReferenceId, // Use the actual order reference ID from Amazon Pay
-            amount: '1000.00', // Example amount in JPY
+            amount: amount, // Use the amount passed as a prop
         };
 
         try {

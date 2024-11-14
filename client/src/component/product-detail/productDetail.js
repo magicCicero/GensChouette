@@ -20,6 +20,7 @@ export default function ProductDetail() {
   const [searchParams] = useSearchParams();
   const [product, setProduct] = useState(null);
   const [cart, setCart] = useState(false);
+  const [amount, setAmount] = useState('0.00'); // Default amount
 
   const getData = async () => {
     const productID = searchParams.get("product");
@@ -27,6 +28,7 @@ export default function ProductDetail() {
       id: productID,
     });
     setProduct(res[0]);
+    setAmount(res[0].price); // Assuming the price is in the response
   };
 
   useEffect(() => {
@@ -129,7 +131,7 @@ export default function ProductDetail() {
             <Box sx={{ ...styles.priceContainer }}>
               <Typography sx={{ ...styles.price }}>¥{product.price}</Typography>
               {product.preprice && (
-                <Typography sx={{ ...styles.preprice }}>
+                <Typography sx={{ ...styles.prePrice }}>
                   ¥{product.preprice}
                 </Typography>
               )}
@@ -167,7 +169,7 @@ export default function ProductDetail() {
               >
                 今すぐ購入する
               </Button> */}
-              <AmazonPayButton />
+              <AmazonPayButton amount={amount} />
               {cart ? (
                 <Button
                   variant="contained"
