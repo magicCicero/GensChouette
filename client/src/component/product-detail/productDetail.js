@@ -14,6 +14,7 @@ import { displayText, filterItems } from "../../util/filterItems";
 import Cookies from "js-cookie";
 import { styles } from "../styles/productDetailStyle";
 import { toast } from "react-toastify";
+import AmazonPayButton from "./amazonPayBtn";
 
 export default function ProductDetail() {
   const [searchParams] = useSearchParams();
@@ -56,22 +57,22 @@ export default function ProductDetail() {
     setCart(!cart);
   };
 
-  const buy = () => {
-    if (Cookies.get("user") && Cookies.get("userID")) {
-      const result = axiosData("/process-payment", {
-        body: JSON.stringify({
-          orderReferenceId: "ORDER_REFERENCE_ID",
-          amount: product.price,
-        }),
-      })
+  // const buy = () => {
+  //   if (Cookies.get("user") && Cookies.get("userID")) {
+  //     const result = axiosData("/process-payment", {
+  //       body: JSON.stringify({
+  //         orderReferenceId: "ORDER_REFERENCE_ID",
+  //         amount: product.price,
+  //       }),
+  //     })
 
-      if(result) {
-        toast.success('決済が完了しました。')
-      }
-    } else {
-      toast.info("会員登録をすることで商品を購入することができます。");
-    }
-  };
+  //     if(result) {
+  //       toast.success('決済が完了しました。')
+  //     }
+  //   } else {
+  //     toast.info("会員登録をすることで商品を購入することができます。");
+  //   }
+  // };
 
   return (
     <Container sx={{ ...styles.container }}>
@@ -158,14 +159,15 @@ export default function ProductDetail() {
             </Typography>
             <Typography sx={{ ...styles.intro }}>{product.intro}</Typography>
             <Box sx={{ ...styles.footer }}>
-              <Button
+              {/* <Button
                 variant="contained"
                 sx={{ ...styles.button }}
                 size="large"
                 onClick={buy}
               >
                 今すぐ購入する
-              </Button>
+              </Button> */}
+              <AmazonPayButton />
               {cart ? (
                 <Button
                   variant="contained"

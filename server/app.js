@@ -39,9 +39,14 @@ const amazonPay = AmazonPayments.connect({
 });
 
 app.post("/process-payment", (req, res) => {
-  const orderReferenceId = req.body.orderReferenceId;
-  const amount = req.body.amount;
+  const { orderReferenceId, amount } = req.body;
 
+  // Validate input
+  if (!orderReferenceId || !amount) {
+    return res.status(400).json({ error: "Missing orderReferenceId or amount" });
+  }
+
+  // Set order reference details
   amazonPay
     .setOrderReferenceDetails({
       AmazonOrderReferenceId: orderReferenceId,
@@ -53,11 +58,13 @@ app.post("/process-payment", (req, res) => {
       },
     })
     .then((response) => {
+      console.log("Order reference details set:", response);
       return amazonPay.confirmOrderReference({
         AmazonOrderReferenceId: orderReferenceId,
       });
     })
     .then((response) => {
+      console.log("Order reference confirmed:", response);
       return amazonPay.authorize({
         AmazonOrderReferenceId: orderReferenceId,
         AuthorizationReferenceId: "AUTH_" + new Date().getTime(),
@@ -70,10 +77,12 @@ app.post("/process-payment", (req, res) => {
       });
     })
     .then((response) => {
+      console.log("Payment authorized:", response);
       res.json(response);
     })
     .catch((err) => {
-      res.status(500).json(err);
+      console.error("Payment processing error:", err);
+      res.status(500).json({ error: "Payment processing failed", details: err });
     });
 });
 
