@@ -79,7 +79,8 @@ function ProTable() {
             id: id
         })
         if (res) {
-            getData()
+            getData();
+            toast.success('remove success');
         } else {
             toast.error('サーバー接続時にエラーが発生しました。')
         }
