@@ -1,25 +1,25 @@
 /* global amazon */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const AmazonPayButton = ({amount}) => {
+const AmazonPayButton = ({ amount }) => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
     useEffect(() => {
-        // Check if the amazon object is available
         if (window.amazon) {
             console.log("Amazon Pay SDK loaded");
             window.onAmazonLoginReady = function () {
-                amazon.Login.setClientId(process.env.REACT_APP_AMAZON_PAY_CLIENT_ID); // Your Amazon Pay Client ID
+                amazon.Login.setClientId(process.env.REACT_APP_AMAZON_PAY_CLIENT_ID);
             };
 
-            // Render the Amazon Pay button
             try {
-              console.log("Attempting to render Amazon Pay button");
+                console.log("Attempting to render Amazon Pay button");
                 amazon.Pay.renderButton('amazonPayButton', {
-                    type: 'PwA', // Pay with Amazon
-                    color: 'Gold', // Button color
-                    size: 'medium', // Button size
-                    // Add other options as needed
-                    onPaymentAuthorize: handlePayment, // Call handlePayment on successful authorization
+                    type: 'PwA',
+                    color: 'Gold',
+                    size: 'medium',
+                    onPaymentAuthorize: handlePayment,
                 });
             } catch (error) {
                 console.error("Error rendering Amazon Pay button:", error);
@@ -30,9 +30,12 @@ const AmazonPayButton = ({amount}) => {
     }, []);
 
     const handlePayment = async (orderReferenceId) => {
+        setLoading(true);
+        setError(null);
+
         const orderData = {
-            orderReferenceId: orderReferenceId, // Use the actual order reference ID from Amazon Pay
-            amount: amount, // Use the amount passed as a prop
+            orderReferenceId: orderReferenceId,
+            amount: amount,
         };
 
         try {
@@ -50,16 +53,21 @@ const AmazonPayButton = ({amount}) => {
                 // Handle successful payment (e.g., redirect to confirmation page)
             } else {
                 console.error('Payment processing failed:', data);
-                // Handle error (e.g., show error message to user)
+                setError(data.error || 'Payment processing failed');
             }
         } catch (error) {
             console.error('Error during payment:', error);
+            setError('An error occurred during payment processing');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div>
-            <div id="amazonPayButton"></div> {/* This is where the Amazon Pay button will be rendered */}
+            <div id="amazonPayButton"></div>
+            {loading && <p>Processing payment...</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     );
 };
