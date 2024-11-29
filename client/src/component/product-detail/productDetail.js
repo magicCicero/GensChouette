@@ -170,6 +170,7 @@ export default function ProductDetail() {
                 今すぐ購入する
               </Button> */}
               <AmazonPayButton amount={amount} />
+              {/* isNaN(amount) || amount <= 0 */}
               {cart ? (
                 <Button
                   variant="contained"

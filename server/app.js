@@ -41,9 +41,11 @@ const amazonPay = AmazonPayments.connect({
 
 app.post("/process-payment", (req, res) => {
   const { orderReferenceId, amount } = req.body;
+  console.log("Received orderReferenceId:", orderReferenceId);
+  console.log("Amount to charge:", amount);
 
   // Validate input
-  if (!orderReferenceId || !amount) {
+  if (!orderReferenceId || !amount && amount > 0) {
     return res.status(400).json({ error: "Missing orderReferenceId or amount" });
   }
 
