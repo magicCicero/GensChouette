@@ -30,18 +30,26 @@ app.use(proudctRouter);
 app.use(sellRouter);
 
 // Amazon Payment
+require('dotenv').config();
 const amazonPay = AmazonPayments.connect({
-  sellerId: "MERCHANT_ID",
-  mwsAccessKey: "ACCESS_KEY",
-  mwsSecretKey: "SECRET_KEY",
-  clientId: "Client_ID",
+  sellerId: process.env.SELLER_ID,
+  mwsAccessKey: process.env.MWS_ACCESS_KEY,
+  mwsSecretKey: process.env.MWS_SECRET_KEY,
+  clientId: process.env.CLIENT_ID,
   region: "jp",
 });
 
 app.post("/process-payment", (req, res) => {
-  const orderReferenceId = req.body.orderReferenceId;
-  const amount = req.body.amount;
+  const { orderReferenceId, amount } = req.body;
+  console.log("Received orderReferenceId:", orderReferenceId);
+  console.log("Amount to charge:", amount);
 
+  // Validate input
+  if (!orderReferenceId || !amount && amount > 0) {
+    return res.status(400).json({ error: "Missing orderReferenceId or amount" });
+  }
+
+  // Set order reference details
   amazonPay
     .setOrderReferenceDetails({
       AmazonOrderReferenceId: orderReferenceId,
@@ -53,11 +61,13 @@ app.post("/process-payment", (req, res) => {
       },
     })
     .then((response) => {
+      console.log("Order reference details set:", response);
       return amazonPay.confirmOrderReference({
         AmazonOrderReferenceId: orderReferenceId,
       });
     })
     .then((response) => {
+      console.log("Order reference confirmed:", response);
       return amazonPay.authorize({
         AmazonOrderReferenceId: orderReferenceId,
         AuthorizationReferenceId: "AUTH_" + new Date().getTime(),
@@ -70,10 +80,12 @@ app.post("/process-payment", (req, res) => {
       });
     })
     .then((response) => {
+      console.log("Payment authorized:", response);
       res.json(response);
     })
     .catch((err) => {
-      res.status(500).json(err);
+      console.error("Payment processing error:", err);
+      res.status(500).json({ error: "Payment processing failed", details: err });
     });
 });
 

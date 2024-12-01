@@ -1,2 +1,7 @@
+------------------------------------------------------------------------ 2024.11.13.15:00
 1. add radio group on reg_modal + update regUser in authModel.js
 2. userID = Cookies.get("userID") in pro_table, sell_table for getData()
+------------------------------------------------------------------------ 2024.11.14.12:00
+1. add amazonpaybutton on productdetail.js, add sdk on index.html
+2. some update on app.js serverside
+3. add .env for both sides
