@@ -10,7 +10,7 @@ const AmazonPayButton = ({ amount }) => {
         if (window.amazon) {
             console.log("Amazon Pay SDK loaded");
             window.onAmazonLoginReady = function () {
-                amazon.Login.setClientId(process.env.REACT_APP_AMAZON_PAY_CLIENT_ID);
+                amazon.Login.setClientId(process.env.CLIENT_ID);
             };
 
             try {
@@ -19,6 +19,7 @@ const AmazonPayButton = ({ amount }) => {
                     type: 'PwA',
                     color: 'Gold',
                     size: 'medium',
+                    language: "ja_JP",
                     onPaymentAuthorize: handlePayment,
                 });
             } catch (error) {
