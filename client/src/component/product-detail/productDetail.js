@@ -17,45 +17,48 @@ import { toast } from "react-toastify";
 import AmazonPayButton from "./amazonPayBtn";
 
 export default function ProductDetail() {
+  const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const [product, setProduct] = useState(null);
   const [cart, setCart] = useState(false);
   const [amount, setAmount] = useState('0.00'); // Default amount
-
-  const getData = async () => {
-    const productID = searchParams.get("product");
-    const res = await axiosData("/getProductByProductID", {
-      id: productID,
-    });
-    setProduct(res[0]);
-    setAmount(res[0].price); // Assuming the price is in the response
+  const validAmount = !isNaN(amount) && amount > 0;
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(price);
   };
-
+  
+  const getData = async () => {
+    setLoading(true);
+    try {
+      const productID = searchParams.get("product");
+      const res = await axiosData("/getProductByProductID", { id: productID });
+      setProduct(res[0]);
+      setAmount(res[0].price); // Assuming the price is in the response
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      toast.error('商品の情報を取得できませんでした。'); // Failed to fetch product details
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   useEffect(() => {
     getData();
-    if (Cookies.get("cart")) {
-      if (
-        JSON.parse(Cookies.get("cart")).indexOf(
-          Number(searchParams.get("product"))
-        ) !== -1
-      ) {
-        setCart(true);
-      } else {
-        setCart(false);
-      }
-    } else {
-      Cookies.set("cart", "[]");
-    }
-  }, []);
+    const cartItems = Cookies.get("cart") ? JSON.parse(Cookies.get("cart")) : [];
+    setCart(cartItems.includes(Number(searchParams.get("product"))));
+  }, [searchParams]);
 
   const handleCart = () => {
-    var cookiesCart = JSON.parse(Cookies.get("cart"));
+    const cartItems = Cookies.get("cart") ? JSON.parse(Cookies.get("cart")) : [];
     if (cart) {
-      cookiesCart = cookiesCart.filter((item) => item !== 1);
+      Cookies.set(
+        "cart",
+        JSON.stringify(cartItems.filter((item) => item !== Number(searchParams.get("product"))))
+      );
     } else {
-      cookiesCart.push(Number(searchParams.get("product")));
+      cartItems.push(Number(searchParams.get("product")));
+      Cookies.set("cart", JSON.stringify(cartItems));
     }
-    Cookies.set("cart", JSON.stringify(cookiesCart));
     setCart(!cart);
   };
 
@@ -75,7 +78,14 @@ export default function ProductDetail() {
   //     toast.info("会員登録をすることで商品を購入することができます。");
   //   }
   // };
-
+  if (loading) {
+    return <Typography>読み込み中...</Typography>; // Loading...
+  }
+  
+  if (!product) {
+    return <Typography>商品の情報が見つかりません。</Typography>;
+  }
+  
   return (
     <Container sx={{ ...styles.container }}>
       {product && (
@@ -102,7 +112,8 @@ export default function ProductDetail() {
                   value={Number(product.review)}
                   readOnly
                   precision={0.1}
-                  emptyIcon={<StarIcon sx={{ color: "white" }} />}
+                  emptyIcon={<StarIcon sx={{ color: "white" }}
+                  aria-label="Product rating" />}
                 />
               </Box>
             </Box>
@@ -129,7 +140,7 @@ export default function ProductDetail() {
               </Box>
             </Box>
             <Box sx={{ ...styles.priceContainer }}>
-              <Typography sx={{ ...styles.price }}>¥{product.price}</Typography>
+            <Typography sx={{ ...styles.price }}>{formatPrice(product.price)}</Typography>
               {product.preprice && (
                 <Typography sx={{ ...styles.prePrice }}>
                   ¥{product.preprice}
@@ -169,27 +180,16 @@ export default function ProductDetail() {
               >
                 今すぐ購入する
               </Button> */}
-              <AmazonPayButton amount={amount} />
-              {/* isNaN(amount) || amount <= 0 */}
-              {cart ? (
-                <Button
-                  variant="contained"
-                  sx={{ ...styles.button }}
-                  size="large"
-                  onClick={handleCart}
-                >
-                  カートから取り出す
-                </Button>
-              ) : (
-                <Button
-                  variant="contained"
-                  sx={{ ...styles.button }}
-                  size="large"
-                  onClick={handleCart}
-                >
-                  カートに入れる
-                </Button>
-              )}
+              {validAmount && <AmazonPayButton amount={amount} />}
+              <Button
+                variant="contained"
+                sx={{ ...styles.button }}
+                size="large"
+                onClick={handleCart}
+                aria-label={cart ? "Remove from cart" : "Add to cart"}
+              >
+                {cart ? "カートから取り出す" : "カートに入れる"}
+              </Button>
             </Box>
           </Grid>
         </Grid>
