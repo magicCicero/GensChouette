@@ -3,6 +3,7 @@ const cors = require("cors");
 const multer = require("multer");
 const crypto = require("crypto");
 const fetch = require("node-fetch");
+const { sendEmail } = require("./utils/emailService");
 
 const app = express();
 const bodyParser = require("body-parser");
@@ -96,7 +97,7 @@ app.post("/amazon-checkout-session", (req, res) => {
 
 // Process Payment Confirmation from Amazon Pay
 app.post("/process-payment", async (req, res) => {
-  const { orderReferenceId } = req.body;
+  const { orderReferenceId, amount } = req.body;
 
   if (!orderReferenceId) {
     return res.status(400).json({ error: "Missing orderReferenceId" });
@@ -119,6 +120,7 @@ app.post("/process-payment", async (req, res) => {
     if (response.ok) {
       console.log("Payment confirmed successfully:", data);
       res.json({ success: true, data });
+      sendEmail(orderReferenceId, amount)
     } else {
       console.error("Payment confirmation failed:", data);
       res.status(500).json({ error: "Failed to confirm payment", details: data });

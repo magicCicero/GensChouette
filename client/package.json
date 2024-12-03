@@ -13,8 +13,6 @@
     "@testing-library/user-event": "^13.5.0",
     "ajv": "^8.17.1",
     "ajv-keywords": "^5.1.0",
-    "amazon-pay-react": "^0.9.0",
-    "amazon-payments": "^0.2.9",
     "axios": "^1.7.2",
     "js-cookie": "^3.0.5",
     "mui-file-input": "^4.0.4",
