@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-const AmazonPayButton = ({ amount }) => {
+const AmazonPayButton = ({ amount, productID }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [sellerId, setSellerId] = useState(null);
@@ -84,6 +84,7 @@ const AmazonPayButton = ({ amount }) => {
         const orderData = {
             orderReferenceId: orderReferenceId,
             amount: amount,
+            productID: productID
         };
 
         try {

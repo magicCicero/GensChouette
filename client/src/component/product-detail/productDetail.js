@@ -26,11 +26,11 @@ export default function ProductDetail() {
   const formatPrice = (price) => {
     return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(price);
   };
+  const productID = searchParams.get("product");
   
   const getData = async () => {
     setLoading(true);
     try {
-      const productID = searchParams.get("product");
       const res = await axiosData("/getProductByProductID", { id: productID });
       setProduct(res[0]);
       setAmount(res[0].price); // Assuming the price is in the response
@@ -180,7 +180,7 @@ export default function ProductDetail() {
               >
                 今すぐ購入する
               </Button> */}
-              {validAmount && <AmazonPayButton amount={amount} />}
+              {validAmount && <AmazonPayButton amount={amount} productID={productID}/>}
               <Button
                 variant="contained"
                 sx={{ ...styles.button }}

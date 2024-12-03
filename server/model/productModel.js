@@ -1,4 +1,4 @@
-const runQuery = require('../utils/database');;
+const runQuery = require('../utils/database');
 
 exports.addProduct = async (req) => {
     console.log(req.body)
