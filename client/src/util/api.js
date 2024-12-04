@@ -2,9 +2,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 export async function axiosData(endpoint, data) {
-    // const url = 'http://localhost:3001' + endpoint;
-    const url = 'https://d870-188-43-33-250.ngrok-free.app' + endpoint;
-
+    const url = 'http://localhost:3001' + endpoint;
 
     const options = {
         headers: {
@@ -36,9 +34,7 @@ export async function axiosData(endpoint, data) {
 }
 
 export async function fetchData(endpoint, method = 'POST', data) {
-    // const url = 'http://localhost:3001' + endpoint;
-    const url = 'https://d870-188-43-33-250.ngrok-free.app' + endpoint;
-
+    const url = 'http://localhost:3001' + endpoint;
 
     const options = {
         headers: {
