@@ -25,7 +25,7 @@ const sendEmailNotification = async (orderReferenceId, amount, productID) => {  
     const customerID = productResult[0].userID;
 
     // Step 2: Fetch customerName and customerEmail from customerTable using customerID
-    const customerQuery = 'SELECT customerName, customerEmail FROM user WHERE id = ?';
+    const customerQuery = 'SELECT name, email FROM user WHERE id = ?';
     const customerResult = await runQuery(customerQuery, [customerID]);
 
     if (customerResult.length === 0) {
@@ -36,7 +36,7 @@ const sendEmailNotification = async (orderReferenceId, amount, productID) => {  
     // Step 3: Prepare the email content
     const mailOptions = {
       from: process.env.EMAIL_USER,  
-      to: "admin@gmail.com",  // Admin email
+      to: process.env.EMAIL_ADMIN,  // Admin email
       subject: `Payment Successful: Order #${orderReferenceId}`,
       text: `Dear Admin,
 
