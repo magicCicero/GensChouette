@@ -9,7 +9,6 @@ const app = express();
 const bodyParser = require("body-parser");
 const path = require("path");
 const uploadPath = "../client/public/assets/img/products";
-const port = 3001;
 
 const authRouter = require("./route/authRoute");
 const proudctRouter = require("./route/productRouter");
@@ -152,7 +151,9 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something went wrong!");
 });
 
+const port = process.env.PORT || 3001;
+
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is listening at http://localhost:${port}`);
+  console.log(`Server is listening on port ${port}`);
 });
