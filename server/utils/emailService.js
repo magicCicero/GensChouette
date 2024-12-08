@@ -31,7 +31,7 @@ const sendEmailNotification = async (orderReferenceId, amount, productID) => {  
     if (customerResult.length === 0) {
       throw new Error('Customer not found');
     }
-    const { name, email } = customerResult[0]; // customerName and customerEmail
+    const { name, email } = customerResult[0]; // customerName and customerEmail -> seller not buyer
 
     // Step 3: Prepare the email content
     const mailOptions = {

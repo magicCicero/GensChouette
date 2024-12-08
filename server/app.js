@@ -61,10 +61,11 @@ app.post("/amazon-checkout-session", (req, res) => {
 
   const payload = {
     webCheckoutDetails: {
-      checkoutReviewReturnUrl: CHECKOUT_REVIEW_RETURN_URL,
-      checkoutResultReturnUrl: CHECKOUT_RESULT_RETURN_URL
+      checkoutReviewReturnUrl: CHECKOUT_REVIEW_RETURN_URL
+      // checkoutResultReturnUrl: CHECKOUT_RESULT_RETURN_URL
     },
     storeId: SELLER_ID,
+    scopes: ["name", "email", "phoneNumber", "billingAddress"],
     paymentDetails: {
       chargeAmount: {
         amount: amount.toFixed(2), // Format to two decimal places
