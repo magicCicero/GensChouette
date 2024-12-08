@@ -4,6 +4,7 @@ const multer = require("multer");
 const crypto = require("crypto");
 const fetch = require("node-fetch");
 const { sendEmailNotification } = require("./utils/emailService");
+const fs = require('fs');
 
 const app = express();
 const bodyParser = require("body-parser");
@@ -33,7 +34,8 @@ app.use(sellRouter);
 require("dotenv").config();
 const SELLER_ID = process.env.SELLER_ID;
 const PUBLIC_KEY_ID = process.env.PUBLIC_KEY_ID;
-const PRIVATE_KEY = process.env.PRIVATE_KEY.replace(/\\n/g, "\n"); // Handle multiline private key
+// const PRIVATE_KEY = process.env.PRIVATE_KEY.replace(/\\n/g, "\n"); // Handle multiline private key
+const PRIVATE_KEY = fs.readFileSync("./AmazonPay_SANDBOX_privatekey.pem");
 const CHECKOUT_REVIEW_RETURN_URL = process.env.CHECKOUT_REVIEW_RETURN_URL;
 const CHECKOUT_RESULT_RETURN_URL = process.env.CHECKOUT_RESULT_RETURN_URL;
 
@@ -54,7 +56,7 @@ app.get("/config/seller-id", (req, res) => {
 // Generate Checkout Session Config for Amazon Pay
 app.post("/amazon-checkout-session", (req, res) => {
   const { amount } = req.body;
-
+  
   if (!amount || amount <= 0) {
     return res.status(400).json({ error: "Invalid payment amount" });
   }
@@ -68,7 +70,7 @@ app.post("/amazon-checkout-session", (req, res) => {
     scopes: ["name", "email", "phoneNumber", "billingAddress"],
     paymentDetails: {
       chargeAmount: {
-        amount: amount.toFixed(2), // Format to two decimal places
+        amount: amount, // Format to two decimal places
         currencyCode: "JPY",
       },
     },

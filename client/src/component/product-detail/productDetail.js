@@ -161,7 +161,7 @@ export default function ProductDetail() {
             <Box sx={{ ...styles.sizeContainer }}>
               {JSON.parse(product.size).map((ele, idx) =>
                 ele ? (
-                  <Typography sx={{ ...styles.size }}>
+                  <Typography sx={{ ...styles.size }} key={idx}>
                     {filterItems.size.value[idx]}
                   </Typography>
                 ) : null
