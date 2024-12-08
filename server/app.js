@@ -33,6 +33,7 @@ app.use(sellRouter);
 // Amazon Pay Setup
 require("dotenv").config();
 const SELLER_ID = process.env.SELLER_ID;
+const STORE_ID = process.env.STORE_ID;
 const PUBLIC_KEY_ID = process.env.PUBLIC_KEY_ID;
 // const PRIVATE_KEY = process.env.PRIVATE_KEY.replace(/\\n/g, "\n"); // Handle multiline private key
 const PRIVATE_KEY = fs.readFileSync("./AmazonPay_SANDBOX_privatekey.pem");
@@ -66,7 +67,7 @@ app.post("/amazon-checkout-session", (req, res) => {
       checkoutReviewReturnUrl: CHECKOUT_REVIEW_RETURN_URL
       // checkoutResultReturnUrl: CHECKOUT_RESULT_RETURN_URL
     },
-    storeId: SELLER_ID,
+    storeId: STORE_ID,
     scopes: ["name", "email", "phoneNumber", "billingAddress"],
     paymentDetails: {
       chargeAmount: {
@@ -74,17 +75,28 @@ app.post("/amazon-checkout-session", (req, res) => {
         currencyCode: "JPY",
       },
     },
-    sellerNote: "Thank you for shopping with us!",
-    customInformation: "Order12345", // Optional custom order reference
   };
 
   const payloadJSON = JSON.stringify(payload);
 
   try {
-    const signature = crypto
-      .createSign("RSA-SHA256")
-      .update(payloadJSON)
-      .sign(PRIVATE_KEY, "base64");
+    const Client = require('@amazonpay/amazon-pay-api-sdk-nodejs');
+    const config = {
+      publicKeyId: PUBLIC_KEY_ID,
+      privateKey: PRIVATE_KEY,
+      region: 'jp',
+      sandbox: true
+  };
+  
+  const testPayClient = new Client.AmazonPayClient(config);
+  const signature = testPayClient.generateButtonSignature(payload);
+    // const signature = crypto
+    //   .createSign("RSA-SHA256")
+    //   .update(payloadJSON)
+    //   .sign(PRIVATE_KEY, "base64");
+
+    console.log("PUBLIC_KEY_ID: ", PUBLIC_KEY_ID, " <---------> signature: ", signature);
+    
 
     res.json({
       payloadJSON,
