@@ -1,6 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
+const cookieParser = require("cookie-parser");
+const session = require('express-session');
+const uuidv4 = require('uuid/v4');
+
 const crypto = require("crypto");
 const fetch = require("node-fetch");
 const { sendEmailNotification } = require("./utils/emailService");
@@ -30,6 +34,17 @@ app.use(authRouter);
 app.use(proudctRouter);
 app.use(sellRouter);
 
+// session, cookie management
+app.use(cookieParser());
+
+const oneDay = 1000 * 60 * 60 * 24;
+app.use(session({
+    secret: uuidv4().toString(),
+    saveUninitialized:true,
+    cookie: { maxAge: oneDay },
+    resave: true 
+}));
+
 // Amazon Pay Setup
 require("dotenv").config();
 const SELLER_ID = process.env.SELLER_ID;
@@ -43,6 +58,11 @@ const CHECKOUT_RESULT_RETURN_URL = process.env.CHECKOUT_RESULT_RETURN_URL;
 const BASE_URL = process.env.NODE_ENV === "production"
   ? "https://api.amazonpay.jp"
   : "https://sandbox.amazonpay.jp";
+
+// amazon pay
+const AmazonPayClient = require('./utils/amazonPayClient');
+const amazonPay = new AmazonPayClient();
+const checkoutSessionManager = require('./utils/checkoutSessionManager');
 
 // Add a new endpoint to serve the SELLER_ID.
 app.get("/config/seller-id", (req, res) => {
@@ -65,7 +85,6 @@ app.post("/amazon-checkout-session", (req, res) => {
   const payload = {
     webCheckoutDetails: {
       checkoutReviewReturnUrl: CHECKOUT_REVIEW_RETURN_URL
-      // checkoutResultReturnUrl: CHECKOUT_RESULT_RETURN_URL
     },
     storeId: STORE_ID,
     scopes: ["name", "email", "phoneNumber", "billingAddress"],
@@ -80,24 +99,7 @@ app.post("/amazon-checkout-session", (req, res) => {
   const payloadJSON = JSON.stringify(payload);
 
   try {
-    const Client = require('@amazonpay/amazon-pay-api-sdk-nodejs');
-    const config = {
-      publicKeyId: PUBLIC_KEY_ID,
-      privateKey: PRIVATE_KEY,
-      region: 'jp',
-      sandbox: true
-  };
-  
-  const testPayClient = new Client.AmazonPayClient(config);
-  const signature = testPayClient.generateButtonSignature(payload);
-    // const signature = crypto
-    //   .createSign("RSA-SHA256")
-    //   .update(payloadJSON)
-    //   .sign(PRIVATE_KEY, "base64");
-
-    console.log("PUBLIC_KEY_ID: ", PUBLIC_KEY_ID, " <---------> signature: ", signature);
-    
-
+    const signature = amazonPay.testPayClient.generateButtonSignature(payload);
     res.json({
       payloadJSON,
       signature,
@@ -112,6 +114,7 @@ app.post("/amazon-checkout-session", (req, res) => {
 // Process Payment Confirmation from Amazon Pay
 app.post("/process-payment", async (req, res) => {
   const { orderReferenceId, amount, productID } = req.body;
+  console.log(orderReferenceId, " <<<< orderReferenceId >>>>>", amount, "<<<<< amount >>>>>", productID, "<<<<< productID >>>>")
 
   if (!orderReferenceId) {
     return res.status(400).json({ error: "Missing orderReferenceId" });
