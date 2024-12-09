@@ -11,7 +11,7 @@ class AmazonPayClient {
             sandbox: true
         };
 
-        this.testPayClient = new Client.AmazonPayClient(config);
+        this.webstoreClient = new Client.WebStoreClient(config);
     }
 }
 

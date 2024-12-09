@@ -16,18 +16,15 @@ function Review(props) {
   const BASE_URL = "http://localhost:3001";
 
   useEffect(() => {
-
-    fetch(BASE_URL + '/setCheckoutSessionId', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        checkoutSessionId: checkoutSessionId
+      fetch(BASE_URL + '/getCheckoutSession', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+          },
+        body: JSON.stringify({
+          checkoutSessionId: checkoutSessionId
+        })
       })
-    })
-    .then((res) => {
-      fetch(BASE_URL + '/getCheckoutSession')
         .then((res) => res.json())
         .then((res) => {
           console.log('result', res.shippingAddress);
@@ -40,7 +37,6 @@ function Review(props) {
             setPaymentMethod(res.paymentPreferences[0].paymentDescriptor);
             console.log('getCheckoutSession complete');
         });
-    })
   }, []);
 
   const updateCheckout = () => {

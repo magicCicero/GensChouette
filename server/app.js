@@ -99,7 +99,7 @@ app.post("/amazon-checkout-session", (req, res) => {
   const payloadJSON = JSON.stringify(payload);
 
   try {
-    const signature = amazonPay.testPayClient.generateButtonSignature(payload);
+    const signature = amazonPay.webstoreClient.generateButtonSignature(payload);
     res.json({
       payloadJSON,
       signature,
@@ -111,33 +111,24 @@ app.post("/amazon-checkout-session", (req, res) => {
   }
 });
 
-// setCheckoutSessionId
-app.post("/setCheckoutSessionId", (req, res) => {
-    
-  console.log("set checkoutSession called"+ JSON.stringify(req.body));
-  req.session.checkoutSessionId = req.body.checkoutSessionId;
-  
-  res.send({})
-});
-
 // getCheckoutSession
-app.get("/getCheckoutSession", async (req, res) => {
-    
-  console.log("------- getCheckoutSession API called ----------");
-  console.log("------- req.session.checkoutSessionId ----------", req.session.checkoutSessionId);
+app.post("/getCheckoutSession", async (req, res) => {
+  const {checkoutSessionId} = req.body;
+  console.log("------- getCheckoutSession API called ----------", checkoutSessionId);
 
   const headers = {
-    'x-amz-pay-idempotency-key': uuidv4().toString().replace(/-/g, '')
+    'x-amz-pay-idempotency-key': uuidv4().toString().replace(/-/g, ''),
+    'x-amz-pay-date': new Date().toISOString(), // Use the correct current time
   };
-  try{
-    const response = await amazonPay.testPayClient.getCheckoutSession(req.session.checkoutSessionId, headers);
-
-    console.log("reponse.data >>>>>>>>>> ", response.data);
-    res.json(response.data);
-  } catch(err) {
+  
+  const response = amazonPay.webstoreClient.getCheckoutSession(checkoutSessionId, headers);
+  response.then((result) => {
+    console.log("reponse.data >>>>>>>>>> ", result.data);
+    res.json(result.data);
+  }).catch(err => {
     console.error(err);
     res.status(500);
-  };
+  });
 });
 
 // updateCheckoutSession
@@ -164,7 +155,7 @@ app.get("/updateCheckoutSession", async (req, res) => {
     };
 
   try{
-    const response = await amazonPay.testPayClient.updateCheckoutSession(checkoutSessionId, payload)
+    const response = await amazonPay.webstoreClient.updateCheckoutSession(checkoutSessionId, payload)
     res.json(response.data)
   } catch(err) {
     console.error(err);
@@ -183,7 +174,7 @@ app.get("/completeCheckoutSession", async (req, res) => {
     }
   }
   try{
-    const response = await amazonPay.testPayClient.completeCheckoutSession(req.session.checkoutSessionId, payload);
+    const response = await amazonPay.webstoreClient.completeCheckoutSession(req.session.checkoutSessionId, payload);
 
     //saving chargePermission and ChargeId in session
     req.session.chargePermissionId = response.data.chargePermissionId;
@@ -199,7 +190,7 @@ app.get("/completeCheckoutSession", async (req, res) => {
 // getCharge
 app.get('/getCharge', async (req, res) => {
   try{
-    const response = await amazonPay.testPayClient.getCharge(req.session.chargeId)
+    const response = await amazonPay.webstoreClient.getCharge(req.session.chargeId)
     res.send(response.data);
   } catch(err){
     console.log(err);
