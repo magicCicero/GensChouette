@@ -16,15 +16,15 @@ function Review(props) {
   const BASE_URL = "http://localhost:3001";
 
   useEffect(() => {
-      fetch(BASE_URL + '/getCheckoutSession', {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json",
+      fetch(BASE_URL + 
+        '/getCheckoutSession?' + new URLSearchParams({ checkoutSessionId }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
           },
-        body: JSON.stringify({
-          checkoutSessionId: checkoutSessionId
-        })
-      })
+        }
+      )
         .then((res) => res.json())
         .then((res) => {
           console.log('result', res.shippingAddress);

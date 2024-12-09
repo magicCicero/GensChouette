@@ -19,8 +19,13 @@ function CheckoutReturn(props) {
     "Declined": "Generic payment decline reason code that includes fraud declines, failure to complete multi-factor authentication (MFA) challenge, and issues with the payment instrument"
   }
 
-  const callGetCheckout = (charge) => {
-        fetch("/getCharge?")
+  const search = window.location?.search;
+  const params = new URLSearchParams(search);
+  const checkoutSessionId = params.get('amazonCheckoutSessionId');
+  const BASE_URL = "http://localhost:3001";
+
+  const callGetCheckout = (chargeId) => {
+        fetch(BASE_URL + "/getCharge?" + new URLSearchParams({ chargeId }))
         .then(res => res.json())
         .then((res) => {
           console.log("30 seconds")
@@ -32,7 +37,7 @@ function CheckoutReturn(props) {
           else if(res.statusDetails.state==="AuthorizationInitiated")
           {
             setMessage(res.statusDetails.state);
-            setTimeout(() => callGetCheckout(charge), 35000);
+            setTimeout(() => callGetCheckout(chargeId), 35000);
           }
           else
           {
@@ -46,11 +51,11 @@ function CheckoutReturn(props) {
         
   }
   useEffect(() => {
-    fetch("/completeCheckoutSession?")
+    fetch(BASE_URL + "/completeCheckoutSession?" + new URLSearchParams({ checkoutSessionId }))
       .then((res) => res.json())
       .then((res) => {
 
-        fetch("/getCheckoutSession?")
+        fetch(BASE_URL + "/getCheckoutSession?" + new URLSearchParams({ checkoutSessionId }))
         .then(res => res.json())
         .then((res) => {
           if(res.statusDetails.state === "Completed") {
@@ -87,7 +92,6 @@ function CheckoutReturn(props) {
                 {isLoading ? <Spinner animation="border" />:""}
                 {text?<div>{text}<br /><Button style={{ backgroundColor:"purple", align:"center" }} onClick={goBackToReview}>Try Again</Button></div>:""}
               </Card.Text>
-
             </Card.Body>
           </Card>
         </div>

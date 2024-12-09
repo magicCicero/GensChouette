@@ -112,8 +112,8 @@ app.post("/amazon-checkout-session", (req, res) => {
 });
 
 // getCheckoutSession
-app.post("/getCheckoutSession", async (req, res) => {
-  const {checkoutSessionId} = req.body;
+app.get("/getCheckoutSession", async (req, res) => {
+  const {checkoutSessionId} = req.query;
   console.log("------- getCheckoutSession API called ----------", checkoutSessionId);
 
   const headers = {
@@ -133,7 +133,8 @@ app.post("/getCheckoutSession", async (req, res) => {
 
 // updateCheckoutSession
 app.get("/updateCheckoutSession", async (req, res) => {
-  console.log("updateCheckoutSession API called");
+  console.log("------------- updateCheckoutSession API called -------------------");
+  const {checkoutSessionId} = req.query;
     const payload = {
         webCheckoutDetails: {
             checkoutResultReturnUrl: CHECKOUT_RESULT_RETURN_URL
@@ -165,8 +166,9 @@ app.get("/updateCheckoutSession", async (req, res) => {
 
 // completeCheckoutSession
 app.get("/completeCheckoutSession", async (req, res) => {
-  
-  console.log("completeCheckoutSession API called");
+  console.log("------------------- completeCheckoutSession API called -----------------");
+  const {checkoutSessionId} = req.query;
+
   const payload = {
     chargeAmount: {
         amount: 30.00,
@@ -174,7 +176,7 @@ app.get("/completeCheckoutSession", async (req, res) => {
     }
   }
   try{
-    const response = await amazonPay.webstoreClient.completeCheckoutSession(req.session.checkoutSessionId, payload);
+    const response = await amazonPay.webstoreClient.completeCheckoutSession(checkoutSessionId, payload);
 
     //saving chargePermission and ChargeId in session
     req.session.chargePermissionId = response.data.chargePermissionId;
@@ -189,8 +191,10 @@ app.get("/completeCheckoutSession", async (req, res) => {
 
 // getCharge
 app.get('/getCharge', async (req, res) => {
+  const {chargeId} = req.query;
+
   try{
-    const response = await amazonPay.webstoreClient.getCharge(req.session.chargeId)
+    const response = await amazonPay.webstoreClient.getCharge(chargeId)
     res.send(response.data);
   } catch(err){
     console.log(err);
