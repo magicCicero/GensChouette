@@ -1,18 +1,18 @@
 const uuidv4 = require('uuid/v4');
 module.exports = {
-    getCheckoutSession: (checkoutSessionId, webstoreClient) => {
+    getCheckoutSession: (checkoutSessionId, testPayClient) => {
 
         const headers = {
             'x-amz-pay-idempotency-key': uuidv4().toString().replace(/-/g, '')
         };
-        response = webstoreClient.getCheckoutSession(checkoutSessionId, headers)
+        response = testPayClient.getCheckoutSession(checkoutSessionId, headers)
         
         return Promise.resolve(response);
     },
-    updateCheckoutSession: (checkoutSessionId, webstoreClient) => {
+    updateCheckoutSession: (checkoutSessionId, testPayClient, CHECKOUT_RESULT_RETURN_URL) => {
         const payload = {
             webCheckoutDetails: {
-                checkoutResultReturnUrl: 'http://localhost:'+process.env.PORT+'/checkoutReturn'
+                checkoutResultReturnUrl: CHECKOUT_RESULT_RETURN_URL
             },
             paymentDetails: {
                 paymentIntent: 'Authorize',
@@ -30,7 +30,7 @@ module.exports = {
             }
         };
 
-        response = webstoreClient.updateCheckoutSession(checkoutSessionId, payload)
+        response = testPayClient.updateCheckoutSession(checkoutSessionId, payload)
         
         return Promise.resolve(response);
     },

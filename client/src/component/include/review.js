@@ -1,26 +1,23 @@
 import { React, useEffect } from 'react';
 
-import './App.css';
 import { useState } from 'react';
-import Item from './Item';
+// import Item from './Item';
 import { Card, Button } from 'react-bootstrap';
-import { useScript } from './PayButtonUtils';
 import APICard from './APICard';
 
-function ReviewPage(props) {
+function Review(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [apiResponse, setApiResponse] = useState('');
   const search = window.location?.search;
   const params = new URLSearchParams(search);
   const checkoutSessionId = params.get('amazonCheckoutSessionId');
-  console.log(checkoutSessionId);
   const [address, setAddress] = useState({});
   const [paymentMethod, setPaymentMethod] = useState({});
-  const scriptState = useScript(
-    'https://static-fe.payments-amazon.com/checkout.js'
-  );
+  const BASE_URL = "http://localhost:3001";
+
   useEffect(() => {
-    fetch('/setCheckoutSessionId', {
+
+    fetch(BASE_URL + '/setCheckoutSessionId', {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
@@ -30,15 +27,10 @@ function ReviewPage(props) {
       })
     })
     .then((res) => {
-      fetch(
-        '/getCheckoutSession' 
-      )
+      fetch(BASE_URL + '/getCheckoutSession')
         .then((res) => res.json())
         .then((res) => {
           console.log('result', res.shippingAddress);
-          // setAddress(res.shippingAddress);
-          // setPaymentMethod(res.paymentDetails);
-          if (scriptState === 'ready') {
             changeAddressButton(checkoutSessionId);
             changePaymentButton(checkoutSessionId);
             console.log(res);
@@ -47,14 +39,13 @@ function ReviewPage(props) {
             setAddress(res.shippingAddress);
             setPaymentMethod(res.paymentPreferences[0].paymentDescriptor);
             console.log('getCheckoutSession complete');
-          }
         });
     })
-  }, [scriptState]);
+  }, []);
 
   const updateCheckout = () => {
     console.log('button pressed');
-    fetch(
+    fetch(BASE_URL + 
       '/updateCheckoutSession?' + new URLSearchParams({ checkoutSessionId }),
       {
         headers: {
@@ -72,14 +63,6 @@ function ReviewPage(props) {
         console.error(err);
       });
   };
-
-  // if (typeof window != "undefined") { // needed if SSR
-  //   window.gapiInit = () => {
-  //     console.log({ gapiInit: true })
-
-  // }
-  //}
-  // set state, what ever you need
 
   const changeAddressButton = (CheckoutSessionId) => {
     console.log('ChxId', CheckoutSessionId);
@@ -100,7 +83,9 @@ function ReviewPage(props) {
   return (
     <div className="App">
       <body className="App-body">
-        <Item />
+        {/* ---------------------------  product info ----------------------- */}
+        {/* <Item /> */}
+
         <div style={{ padding: '3em' }}>
           <Card>
             <Card.Body>
@@ -168,4 +153,4 @@ function ReviewPage(props) {
   );
 }
 
-export default ReviewPage;
+export default Review;

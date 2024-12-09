@@ -74,7 +74,7 @@ app.get("/config/seller-id", (req, res) => {
   }
 });
 
-// Generate Checkout Session Config for Amazon Pay
+// Generate Checkout Session Config for Amazon Pay Button Render
 app.post("/amazon-checkout-session", (req, res) => {
   const { amount } = req.body;
   
@@ -111,10 +111,105 @@ app.post("/amazon-checkout-session", (req, res) => {
   }
 });
 
+// setCheckoutSessionId
+app.post("/setCheckoutSessionId", (req, res) => {
+    
+  console.log("set checkoutSession called"+ JSON.stringify(req.body));
+  req.session.checkoutSessionId = req.body.checkoutSessionId;
+  
+  res.send({})
+});
+
+// getCheckoutSession
+app.get("/getCheckoutSession", async (req, res) => {
+    
+  console.log("------- getCheckoutSession API called ----------");
+  console.log("------- req.session.checkoutSessionId ----------", req.session.checkoutSessionId);
+
+  const headers = {
+    'x-amz-pay-idempotency-key': uuidv4().toString().replace(/-/g, '')
+  };
+  try{
+    const response = await amazonPay.testPayClient.getCheckoutSession(req.session.checkoutSessionId, headers);
+
+    console.log("reponse.data >>>>>>>>>> ", response.data);
+    res.json(response.data);
+  } catch(err) {
+    console.error(err);
+    res.status(500);
+  };
+});
+
+// updateCheckoutSession
+app.get("/updateCheckoutSession", async (req, res) => {
+  console.log("updateCheckoutSession API called");
+    const payload = {
+        webCheckoutDetails: {
+            checkoutResultReturnUrl: CHECKOUT_RESULT_RETURN_URL
+        },
+        paymentDetails: {
+            paymentIntent: 'Authorize',
+            canHandlePendingAuthorization: true,
+            chargeAmount: {
+                amount: 30, // should get from frontend.
+                currencyCode: 'JPY'
+            }
+        },
+        merchantMetadata: {
+            merchantReferenceId: 'ORDER_12345', // should be unique for each order from your database order table
+            merchantStoreName: 'Gens Chouette',
+            noteToBuyer: 'Thank you for purchasing!',
+            customInformation: ''
+        }
+    };
+
+  try{
+    const response = await amazonPay.testPayClient.updateCheckoutSession(checkoutSessionId, payload)
+    res.json(response.data)
+  } catch(err) {
+    console.error(err);
+    res.status(500);
+  };
+});
+
+// completeCheckoutSession
+app.get("/completeCheckoutSession", async (req, res) => {
+  
+  console.log("completeCheckoutSession API called");
+  const payload = {
+    chargeAmount: {
+        amount: 30.00,
+        currencyCode: "JPY"
+    }
+  }
+  try{
+    const response = await amazonPay.testPayClient.completeCheckoutSession(req.session.checkoutSessionId, payload);
+
+    //saving chargePermission and ChargeId in session
+    req.session.chargePermissionId = response.data.chargePermissionId;
+    req.session.chargeId = response.data.chargeId;
+    res.send(response.data);
+  } catch(err) {
+    console.error(err);
+    res.status(500);
+  };
+    
+});
+
+// getCharge
+app.get('/getCharge', async (req, res) => {
+  try{
+    const response = await amazonPay.testPayClient.getCharge(req.session.chargeId)
+    res.send(response.data);
+  } catch(err){
+    console.log(err);
+    res.send(err.response.data);
+  };
+});
+
 // Process Payment Confirmation from Amazon Pay
 app.post("/process-payment", async (req, res) => {
   const { orderReferenceId, amount, productID } = req.body;
-  console.log(orderReferenceId, " <<<< orderReferenceId >>>>>", amount, "<<<<< amount >>>>>", productID, "<<<<< productID >>>>")
 
   if (!orderReferenceId) {
     return res.status(400).json({ error: "Missing orderReferenceId" });

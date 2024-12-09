@@ -14,6 +14,8 @@ import UserPage from "./pages/userPage";
 import IntroPage from "./pages/introPage";
 import FaqPage from "./pages/faqPage";
 import ContactPage from "./pages/contactPage";
+import ReviewPage from "./pages/reviewPage";
+import CheckoutReturnPage from "./pages/CheckoutReturnPage";
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
           <Route path="/intro" element={<IntroPage />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/review" element={<ReviewPage />} />
+          <Route path="/checkoutReturn" element={<CheckoutReturnPage />} />
         </Routes>
       </BrowserRouter>
     </Box>
