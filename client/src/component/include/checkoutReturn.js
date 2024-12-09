@@ -6,7 +6,7 @@ import APICard from './APICard';
 import { Card, Spinner, Button } from "react-bootstrap";
 
 
-function Confirm(props) {
+function CheckoutReturn(props) {
   const [message, setMessage] = useState("loading...");
   const [apiResponse, setApiResponse] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -98,4 +98,4 @@ function Confirm(props) {
   );
 }
 
-export default Confirm;
+export default CheckoutReturn;
