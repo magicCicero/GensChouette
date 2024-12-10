@@ -1,8 +1,6 @@
 import { React, useEffect } from "react";
 
 import { useState } from "react";
-// import Item from './Item';
-import APICard from './APICard';
 import { Card, Spinner, Button } from "react-bootstrap";
 
 
@@ -95,8 +93,6 @@ function CheckoutReturn(props) {
             </Card.Body>
           </Card>
         </div>
-
-        <APICard text={apiResponse} />
       </body>
     </div>
   );
