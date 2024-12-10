@@ -141,7 +141,7 @@ export const styles = {
         fontWeight: 600
     },
     intro: {
-        marginTop: '30px',
+        margin: '30px 0',
         fontSize: '13px'
     },
     footer: {
@@ -154,7 +154,11 @@ export const styles = {
             md: 'row'
         },
         gap: '10px',
-        marginTop: '30px'
+        marginTop: {
+            xs: '30px',
+            sm: '30px',
+            md: '5px'
+        }
     },
     button: {
         backgroundColor: 'var(--primary)',

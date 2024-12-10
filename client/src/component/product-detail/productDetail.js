@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Rating,
-  Typography,
-} from "@mui/material";
+import {Box, Button, Container, Grid, Rating, Typography,} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import StarIcon from "@mui/icons-material/Star";
 import { useSearchParams } from "react-router-dom";
@@ -15,6 +8,7 @@ import Cookies from "js-cookie";
 import { styles } from "../styles/productDetailStyle";
 import { toast } from "react-toastify";
 import AmazonPayButton from "./amazonPayBtn";
+import QuantityInput from "./quantityInput";
 
 export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
@@ -63,6 +57,12 @@ export default function ProductDetail() {
     setCart(!cart);
   };
 
+  const addProductIntoStorage = () => {
+    localStorage.removeItem("selectedProduct");
+    localStorage.setItem("selectedProduct", JSON.stringify(product));
+    console.log("Product saved to localStorage:", product);
+  };
+  
   if (loading) {
     return <Typography>読み込み中...</Typography>; // Loading...
   }
@@ -156,8 +156,14 @@ export default function ProductDetail() {
               {displayText[product.matchType]} ・ {displayText[product.casual]}
             </Typography>
             <Typography sx={{ ...styles.intro }}>{product.intro}</Typography>
+            <QuantityInput/>
+
             <Box sx={{ ...styles.footer }}>
-              {validAmount && <AmazonPayButton amount={amount} productID={productID}/>}
+              {validAmount && 
+              <AmazonPayButton 
+                amount={amount} 
+                handleAmazonPayClick={addProductIntoStorage}
+              />}
               <Button
                 variant="contained"
                 sx={{ ...styles.button }}

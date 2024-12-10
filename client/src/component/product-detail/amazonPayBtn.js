@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchData } from '../../util/api';
 
-const AmazonPayButton = ({ amount, productID }) => {
+const AmazonPayButton = ({ amount, handleAmazonPayClick }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -47,13 +47,12 @@ const AmazonPayButton = ({ amount, productID }) => {
           const sessionConfig = await fetchCheckoutSessionConfig();
           if (!sessionConfig) return;
           
-          amazon.Pay.renderButton('#amazonPayButton', {
+          const amazonPayButton = amazon.Pay.renderButton('#amazonPayButton', { // render + signin
             merchantId: fetchedSellerId,
             sandbox: true, // Set to false in production
             checkoutLanguage: 'ja_JP',
             ledgerCurrency: 'JPY',
             placement: 'Checkout',
-            createCheckoutSessionConfig: sessionConfig,
             // onPaymentAuthorize: (data) => {
             //   handlePayment(data.amazonOrderReferenceId);
             // },
@@ -61,6 +60,13 @@ const AmazonPayButton = ({ amount, productID }) => {
               console.error('Amazon Pay button error:', err);
               setError('Amazon Pay button failed to load.');
             },
+          });
+
+          amazonPayButton.onClick(()=>{
+            handleAmazonPayClick();
+            amazonPayButton.initCheckout({
+              createCheckoutSessionConfig: sessionConfig
+            });
           });
         };
         

@@ -16,6 +16,8 @@ function Review(props) {
   const BASE_URL = "http://localhost:3001";
 
   useEffect(() => {
+    console.log(localStorage.getItem("selectedProduct"), "localstorage");
+    
       fetch(BASE_URL + 
         '/getCheckoutSession?' + new URLSearchParams({ checkoutSessionId }),
         {
@@ -27,10 +29,8 @@ function Review(props) {
       )
         .then((res) => res.json())
         .then((res) => {
-          console.log('result', res.shippingAddress);
             changeAddressButton(checkoutSessionId);
             changePaymentButton(checkoutSessionId);
-            console.log(res);
             setApiResponse(JSON.stringify(res, null, 3));
             setIsLoading(false);
             setAddress(res.shippingAddress);
