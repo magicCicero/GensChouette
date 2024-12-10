@@ -6,11 +6,11 @@ import CheckoutReturn from "../component/include/checkoutReturn";
 
 export default function CheckoutReturnPage() {
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
       <Navbar />
       <CheckoutReturn />
       <Footer />
-    </>
+    </div>
   );
 }

@@ -9,22 +9,24 @@ export const styles = {
     },
     gridItem1: {
         paddingLeft: '20px !important',
-        paddingRight: '20px'
-    },
-    img: {
-        width: '100%',
-        height: '300px',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center'
+        paddingRight: '20px',
+        paddingTop: '0 !important'
     },
     gridItem2: {
-        marginTop: '30px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         paddingTop: '0px !important',
         paddingLeft: '20px !important',
         paddingRight: '20px'
+    },
+    paper: {
+        padding: "1rem"
+    },
+    flex: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end'
     },
     typeTxt: {
         fontFamily: `"Noto Sans JP", sans- serif !important`,

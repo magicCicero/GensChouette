@@ -1,12 +1,11 @@
 import { React, useEffect } from "react";
-
+import {Box, Button, IconButton, Typography,} from "@mui/material";
 import { useState } from "react";
-import { Card, Spinner, Button } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
 
 
 function CheckoutReturn(props) {
   const [message, setMessage] = useState("loading...");
-  const [apiResponse, setApiResponse] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [text, setText] = useState("");
   const statusMessageMap = {
@@ -43,8 +42,6 @@ function CheckoutReturn(props) {
             setText("Please try again with a different payment method");
             setIsLoading(false);
           }
-          setApiResponse(JSON.stringify(res, null, 3));
-
         })
         
   }
@@ -68,7 +65,6 @@ function CheckoutReturn(props) {
 
           }
         });
-          setApiResponse(JSON.stringify(res, null, 3));
       })
 
   }, []);
@@ -78,23 +74,16 @@ function CheckoutReturn(props) {
   }
 
   return (
-    <div className="App">
-      <body className="App-body">
-        {/* ---------------------------  product info ----------------------- */}
-        {/* <Item /> */}
-        <div style={{ padding: "3em" }}>
-          <Card>
-            <Card.Body>
-              <Card.Title style={{ color: 'purple' }}>{message}</Card.Title>
-              <Card.Text>
-                {isLoading ? <Spinner animation="border" />:""}
-                {text?<div>{text}<br /><Button style={{ backgroundColor:"purple", align:"center" }} onClick={goBackToReview}>Try Again</Button></div>:""}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </div>
-      </body>
-    </div>
+      <Box sx={{textAlign: "center", padding: "3rem", height: 'auto', flexGrow: '1'}}>
+        <Typography variant="h4">{message}</Typography>
+        {isLoading ? <Spinner animation="border" variant="primary"/> : ""}
+        {text ? 
+          <div> 
+            {text} <br />
+            <Button variant="outlined" onClick={goBackToReview}>Try Again</Button>
+          </div>
+          :""}
+      </Box>
   );
 }
 

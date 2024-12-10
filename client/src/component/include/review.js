@@ -1,8 +1,7 @@
 import { React, useEffect } from 'react';
-import {Box, Button, Container, Grid, Typography,} from "@mui/material";
+import {Box, Button, CardActions, CardContent, CardHeader, Container, Grid, Paper, Typography,} from "@mui/material";
 import { useState } from 'react';
 import { styles } from '../styles/reviewStyle';
-import { displayText, filterItems } from '../../util/filterItems';
 import { Card } from "react-bootstrap";
 import ReviewTable from '../../util/reviewTable';
 
@@ -92,67 +91,54 @@ function Review(props) {
             <ReviewTable product={product} />
           </Grid>
           <Grid item xs={12} sm={6} md={6} sx={{ ...styles.gridItem2 }}>
-            <div className="App">
-              <body className="App-body">
-                <div style={{ padding: '3em' }}>
-                  <Card>
-                    <Card.Body>
-                      <Card.Title>Shipping Address</Card.Title>
-                      <Card.Text>
-                        {isLoading ? (
-                          <div>
-                            <p>loading...</p>
-                          </div>
+            <Paper elevation={3} sx={{...styles.paper}}>
+              <Card>
+                <Box sx={{...styles.flex}}>
+                  <CardHeader title="Shipping Address"/>
+                  <CardActions>
+                      <Button variant="text" id="changeButton1" size='small'>Change</Button>
+                    </CardActions>
+                </Box>
+                  <CardContent>
+                    {isLoading ? (
+                      <Typography> loading... </Typography>
+                    ) : (
+                      address ? (
+                        Object.keys(address).map((key) => (
+                          <Typography key={key}>{address[key]}</Typography>
+                        ))
                         ) : (
-                          <div>
-                            {address
-                              ? Object.keys(address).map((key) => {
-                                  return <div>{address[key]}</div>;
-                                })
-                              : 'No address available'}
-                          </div>
-                        )}
-                      </Card.Text>
-                      <div id="changeButton1">
-                        <Button variant="secondary">Change Address</Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
-
-                  <Card>
-                    <Card.Body>
-                      <Card.Title>Payment Method</Card.Title>
-                      <Card.Text>
-                        {isLoading ? (
-                          <div>
-                            <p>loading...</p>
-                          </div>
-                        ) : (
-                          <div>
-                            {JSON.stringify(paymentMethod)}
-                            <br />
-                          </div>
-                        )}
-                      </Card.Text>
-                      <div id="changeButton2">
-                        <Button variant="secondary">Change Payment Method</Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                  <Card>
-                    <Card.Body>
-                      <Button
-                        style={{ backgroundColor: 'purple', align: 'center' }}
-                        onClick={updateCheckout}
-                      >
-                        Confirm Checkout
-                      </Button>
-                    </Card.Body>
-                  </Card>
-                  <div style={{ justifyContent: 'center', padding: '1em' }}></div>
-                </div>
-              </body>
-            </div>
+                        <Typography>No address available</Typography>
+                        )
+                    )}
+                  </CardContent>
+              </Card>
+              <Card>
+                <Box sx={{...styles.flex}}>
+                <CardHeader title="Payment Method"/>
+                <CardActions>
+                    <Button variant="text" id="changeButton2" size='small'>Change</Button>
+                  </CardActions>
+                </Box>
+                <CardContent>
+                    {isLoading ? (
+                      <Typography> loading... </Typography>
+                    ) : (
+                      <Typography>
+                        {JSON.stringify(paymentMethod)}
+                      </Typography>
+                    )}
+                </CardContent>
+              </Card>
+              <Button
+                variant="contained"
+                color="info"
+                onClick={updateCheckout}
+                sx={{float:"right"}}
+              >
+                Confirm Checkout
+              </Button>
+            </Paper>
           </Grid>
         </Grid>
       )}
