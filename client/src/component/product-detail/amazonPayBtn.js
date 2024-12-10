@@ -54,9 +54,9 @@ const AmazonPayButton = ({ amount, productID }) => {
             ledgerCurrency: 'JPY',
             placement: 'Checkout',
             createCheckoutSessionConfig: sessionConfig,
-            onPaymentAuthorize: (data) => {
-              handlePayment(data.amazonOrderReferenceId);
-            },
+            // onPaymentAuthorize: (data) => {
+            //   handlePayment(data.amazonOrderReferenceId);
+            // },
             onError: (err) => {
               console.error('Amazon Pay button error:', err);
               setError('Amazon Pay button failed to load.');
@@ -71,41 +71,41 @@ const AmazonPayButton = ({ amount, productID }) => {
       }
     }, []);
     
-    const handlePayment = async (orderReferenceId) => {
-        console.log("Amazon Pay button clicked");
-        setLoading(true);
-        setError(null);
+    // const handlePayment = async (orderReferenceId) => {
+    //     console.log("Amazon Pay button clicked");
+    //     setLoading(true);
+    //     setError(null);
 
-        const orderData = {
-            orderReferenceId: orderReferenceId,
-            amount: amount,
-            productID: productID
-        };
+    //     const orderData = {
+    //         orderReferenceId: orderReferenceId,
+    //         amount: amount,
+    //         productID: productID
+    //     };
 
-        try {
-            const response = await fetch('/process-payment', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(orderData),
-            });
+    //     try {
+    //         const response = await fetch('/process-payment', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(orderData),
+    //         });
 
-            const data = await response.json();
-            if (response.ok) {
-                console.log('Payment processed successfully:', data);
-                // Handle successful payment (e.g., redirect to confirmation page)
-            } else {
-                console.error('Payment processing failed:', data);
-                setError(data.error || 'Payment processing failed');
-            }
-        } catch (error) {
-            console.error('Error during payment:', error);
-            setError('An error occurred during payment processing');
-        } finally {
-            setLoading(false);
-        }
-    };
+    //         const data = await response.json();
+    //         if (response.ok) {
+    //             console.log('Payment processed successfully:', data);
+    //             // Handle successful payment (e.g., redirect to confirmation page)
+    //         } else {
+    //             console.error('Payment processing failed:', data);
+    //             setError(data.error || 'Payment processing failed');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error during payment:', error);
+    //         setError('An error occurred during payment processing');
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     return (
         <div>

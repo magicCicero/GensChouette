@@ -147,15 +147,17 @@ export const styles = {
     footer: {
         display: 'flex',
         justifyContent: 'end',
+        alignItems: 'center',
         flexDirection: {
             xs: 'column',
             sm: 'column',
             md: 'row'
-        }
+        },
+        gap: '10px',
+        marginTop: '30px'
     },
     button: {
         backgroundColor: 'var(--primary)',
-        marginInline: '10px',
-        marginTop: '30px'
+        minWidth: '200px'
     }
 }

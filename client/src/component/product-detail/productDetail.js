@@ -32,6 +32,7 @@ export default function ProductDetail() {
     setLoading(true);
     try {
       const res = await axiosData("/getProductByProductID", { id: productID });
+      console.log(res, "<<<<<<<<<< res");
       setProduct(res[0]);
       setAmount(res[0].price); // Assuming the price is in the response
     } catch (error) {
@@ -62,22 +63,6 @@ export default function ProductDetail() {
     setCart(!cart);
   };
 
-  // const buy = () => {
-  //   if (Cookies.get("user") && Cookies.get("userID")) {
-  //     const result = axiosData("/process-payment", {
-  //       body: JSON.stringify({
-  //         orderReferenceId: "ORDER_REFERENCE_ID",
-  //         amount: product.price,
-  //       }),
-  //     })
-
-  //     if(result) {
-  //       toast.success('決済が完了しました。')
-  //     }
-  //   } else {
-  //     toast.info("会員登録をすることで商品を購入することができます。");
-  //   }
-  // };
   if (loading) {
     return <Typography>読み込み中...</Typography>; // Loading...
   }
@@ -172,14 +157,6 @@ export default function ProductDetail() {
             </Typography>
             <Typography sx={{ ...styles.intro }}>{product.intro}</Typography>
             <Box sx={{ ...styles.footer }}>
-              {/* <Button
-                variant="contained"
-                sx={{ ...styles.button }}
-                size="large"
-                onClick={buy}
-              >
-                今すぐ購入する
-              </Button> */}
               {validAmount && <AmazonPayButton amount={amount} productID={productID}/>}
               <Button
                 variant="contained"
