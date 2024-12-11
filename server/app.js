@@ -151,7 +151,7 @@ app.get("/updateCheckoutSession", async (req, res) => {
         merchantMetadata: {
             merchantReferenceId: uuidv4(), // should be unique for each order
             merchantStoreName: 'Gens Chouette',
-            noteToBuyer: 'Thank you for purchasing!',
+            noteToBuyer: 'Gens Chouetteでご購入いただきありがとうございます!',
             customInformation: 'This is test order in sandbox'
         }
     };
