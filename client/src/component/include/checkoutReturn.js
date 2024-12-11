@@ -5,11 +5,11 @@ import { Spinner } from "react-bootstrap";
 import Cookies from 'js-cookie'
 
 function CheckoutReturn(props) {
-  const [message, setMessage] = useState("loading...");
+  const [message, setMessage] = useState("読み込み中...");
   const [isLoading, setIsLoading] = useState(true);
   const [text, setText] = useState("");
   const statusMessageMap = {
-    "Completed": "Your Order has been placed",
+    "Completed": "ご注文が完了しました",
     "BuyerCanceled": "The Order has been canceled by the user",
     "Expired": "The Checkout Session expired 24 hour after creation because there was no redirect to the amazonPayRedirectUrl, buyer did not complete payment, or the checkout was not confirmed with Complete Checkout Session",
     "AmazonCanceled": "Amazon has canceled the transaction due to service unavailability. This is not a payment associated cancelation",
@@ -104,7 +104,7 @@ function CheckoutReturn(props) {
         .then(res => res.json())
         .then((res) => {
           if(res.statusDetails.state === "Completed") {
-            setMessage("Placing your order...");
+            setMessage("ご注文...");
             setTimeout(() => callGetCheckout(res.chargeId), 5000)
           }
           else{

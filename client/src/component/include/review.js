@@ -102,35 +102,35 @@ function Review(props) {
             <Paper elevation={3} sx={{...styles.paper}}>
               <Card>
                 <Box sx={{...styles.flex}}>
-                  <CardHeader title="Shipping Address"/>
+                  <CardHeader title="お届け先の住所"/>
                   <CardActions>
-                      <Button variant="text" id="changeButton1" size='small'>Change</Button>
+                      <Button variant="text" id="changeButton1" size='small'>変化</Button>
                     </CardActions>
                 </Box>
                   <CardContent>
                     {isLoading ? (
-                      <Typography> loading... </Typography>
+                      <Typography> 読み込み中... </Typography>
                     ) : (
                       address ? (
                         Object.keys(address).map((key) => (
                           <Typography key={key}>{address[key]}</Typography>
                         ))
                         ) : (
-                        <Typography>No address available</Typography>
+                        <Typography>住所が利用できません</Typography>
                         )
                     )}
                   </CardContent>
               </Card>
               <Card>
                 <Box sx={{...styles.flex}}>
-                <CardHeader title="Payment Method"/>
+                <CardHeader title="支払方法"/>
                 <CardActions>
-                    <Button variant="text" id="changeButton2" size='small'>Change</Button>
+                    <Button variant="text" id="changeButton2" size='small'>変化</Button>
                   </CardActions>
                 </Box>
                 <CardContent>
                     {isLoading ? (
-                      <Typography> loading... </Typography>
+                      <Typography> 読み込み中... </Typography>
                     ) : (
                       <Typography>
                         {JSON.stringify(paymentMethod)}
@@ -144,7 +144,7 @@ function Review(props) {
                 onClick={updateCheckout}
                 sx={{float:"right", marginTop:"10px"}}
               >
-                Confirm Checkout
+                チェックアウトの確認
               </Button>
             </Paper>
           </Grid>

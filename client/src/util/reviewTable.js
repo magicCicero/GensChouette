@@ -21,11 +21,11 @@ export default function ReviewTable(product) {
       <Table aria-label="spanning table">
         <TableHead>
           <TableRow>
-            <TableCell>Product</TableCell>
-            <TableCell>Product Name</TableCell>
-            <TableCell align="right">Unit Price</TableCell>
-            <TableCell align="right">Quantity</TableCell>
-            <TableCell align="right">Subtotal</TableCell>
+            <TableCell>製品</TableCell>
+            <TableCell>製品名</TableCell>
+            <TableCell align="right">単価</TableCell>
+            <TableCell align="right">量</TableCell>
+            <TableCell align="right">小計</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -41,7 +41,7 @@ export default function ReviewTable(product) {
             </TableRow>
            ))}
           <TableRow>
-            <TableCell align="right" colSpan={4}>Total</TableCell>
+            <TableCell align="right" colSpan={4}>合計</TableCell>
             <TableCell align="right">{ccyFormat(Number(rows[0].price))}</TableCell>
           </TableRow>
         </TableBody>
