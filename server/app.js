@@ -18,6 +18,7 @@ const uploadPath = "../client/public/assets/img/products";
 const authRouter = require("./route/authRoute");
 const proudctRouter = require("./route/productRouter");
 const sellRouter = require("./route/sellRouter");
+const checkoutModel = require('./model/checkoutModel');
 
 // Middlewarers
 app.use(cors()); // Enable CORS
@@ -123,7 +124,7 @@ app.get("/getCheckoutSession", async (req, res) => {
   
   const response = amazonPay.webstoreClient.getCheckoutSession(checkoutSessionId, headers);
   response.then((result) => {
-    console.log("reponse.data >>>>>>>>>> ", result.data);
+    console.log("result.data >>>>>>>>>> ", result.data);
     res.json(result.data);
   }).catch(err => {
     console.error(err);
@@ -148,16 +149,17 @@ app.get("/updateCheckoutSession", async (req, res) => {
             }
         },
         merchantMetadata: {
-            merchantReferenceId: 'ORDER_12345', // should be unique for each order from your database order table
+            merchantReferenceId: uuidv4(), // should be unique for each order
             merchantStoreName: 'Gens Chouette',
             noteToBuyer: 'Thank you for purchasing!',
-            customInformation: ''
+            customInformation: 'This is test order in sandbox'
         }
     };
 
   try{
-    const response = await amazonPay.webstoreClient.updateCheckoutSession(checkoutSessionId, payload)
-    res.json(response.data)
+    const response = await amazonPay.webstoreClient.updateCheckoutSession(checkoutSessionId, payload);
+    console.log("reponse.data >>>>>>>>>> ", response.data);
+    res.json(response.data);
   } catch(err) {
     console.error(err);
     res.status(500);
@@ -167,8 +169,9 @@ app.get("/updateCheckoutSession", async (req, res) => {
 // completeCheckoutSession
 app.get("/completeCheckoutSession", async (req, res) => {
   console.log("------------------- completeCheckoutSession API called -----------------");
-  const {checkoutSessionId} = req.query;
-
+  const {checkoutSessionId, userID, productID, merchantReferenceId} = req.query;
+  console.log("req.query >>>>>>>>>>>>>>>>>>>>>>>>>>> ", checkoutSessionId, userID, productID, merchantReferenceId);
+  
   const payload = {
     chargeAmount: {
         amount: 30.00,
@@ -177,11 +180,18 @@ app.get("/completeCheckoutSession", async (req, res) => {
   }
   try{
     const response = await amazonPay.webstoreClient.completeCheckoutSession(checkoutSessionId, payload);
+    
+    const status = response.data.statusDetails.state;
+    
+    const values = [
+      userID,
+      productID,
+      merchantReferenceId,
+      status,
+    ];
+    const result = await checkoutModel.insertOrder(values); // false or rows[0]
 
-    //saving chargePermission and ChargeId in session
-    req.session.chargePermissionId = response.data.chargePermissionId;
-    req.session.chargeId = response.data.chargeId;
-    res.send(response.data);
+    res.send(res.json());
   } catch(err) {
     console.error(err);
     res.status(500);
@@ -202,41 +212,41 @@ app.get('/getCharge', async (req, res) => {
   };
 });
 
-// Process Payment Confirmation from Amazon Pay
-app.post("/process-payment", async (req, res) => {
-  const { orderReferenceId, amount, productID } = req.body;
+// Process Payment Confirmation from Amazon Pay for insertTransaction and emailnotification
+// app.post("/payment-completion", async (req, res) => {
+//   const { orderReferenceId, amount, productID, userID } = req.body;
 
-  if (!orderReferenceId) {
-    return res.status(400).json({ error: "Missing orderReferenceId" });
-  }
+//   if (!orderReferenceId) {
+//     return res.status(400).json({ error: "Missing orderReferenceId" });
+//   }
 
-  try {
-    const response = await fetch(`${BASE_URL}/v2/confirm`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-      },
-      body: JSON.stringify({
-        AmazonOrderReferenceId: orderReferenceId,
-      }),
-    });
+//   try {
+//     const response = await fetch(`${BASE_URL}/v2/confirm`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+//       },
+//       body: JSON.stringify({
+//         AmazonOrderReferenceId: orderReferenceId,
+//       }),
+//     });
 
-    const data = await response.json();
+//     const data = await response.json();
 
-    if (response.ok) {
-      console.log("Payment confirmed successfully:", data);
-      res.json({ success: true, data });
-      sendEmailNotification(orderReferenceId, amount, productID);
-    } else {
-      console.error("Payment confirmation failed:", data);
-      res.status(500).json({ error: "Failed to confirm payment", details: data });
-    }
-  } catch (error) {
-    console.error("Error processing payment:", error);
-    res.status(500).json({ error: "An unexpected error occurred during payment confirmation" });
-  }
-});
+//     if (response.ok) {
+//       console.log("Payment confirmed successfully:", data);
+//       res.json({ success: true, data });
+//       sendEmailNotification(orderReferenceId, amount, productID);
+//     } else {
+//       console.error("Payment confirmation failed:", data);
+//       res.status(500).json({ error: "Failed to confirm payment", details: data });
+//     }
+//   } catch (error) {
+//     console.error("Error processing payment:", error);
+//     res.status(500).json({ error: "An unexpected error occurred during payment confirmation" });
+//   }
+// });
 
 // Multer storage configuration
 const storage = multer.diskStorage({

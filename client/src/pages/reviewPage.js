@@ -6,11 +6,11 @@ import Review from "../component/include/review";
 
 export default function ReviewPage() {
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header />
       <Navbar />
       <Review />
       <Footer />
-    </>
+    </div>
   );
 }

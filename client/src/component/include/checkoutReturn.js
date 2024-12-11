@@ -2,7 +2,7 @@ import { React, useEffect } from "react";
 import {Box, Button, IconButton, Typography,} from "@mui/material";
 import { useState } from "react";
 import { Spinner } from "react-bootstrap";
-
+import Cookies from 'js-cookie'
 
 function CheckoutReturn(props) {
   const [message, setMessage] = useState("loading...");
@@ -20,7 +20,45 @@ function CheckoutReturn(props) {
   const params = new URLSearchParams(search);
   const checkoutSessionId = params.get('amazonCheckoutSessionId');
   const BASE_URL = "http://localhost:3001";
+  const product = localStorage.getItem("selectedProduct");
+  const orderInfo = localStorage.getItem("orderInfo");
+  console.log("orderInfo  >>>>>>>>>>>>>>>>>>  ", orderInfo)
+  // const product = JSON.parse(productString); // Parse the string into an object
+  // const orderInfo = JSON.parse(orderInfoString);
 
+  console.log("product >>>>>>> ", product);
+  const userID = Cookies.get('userID');
+
+  // const completePayment = async () => {
+  //   // create order id
+  //   const orderReferenceId = uuidv4();
+  //   const payload = {
+  //     orderReferenceId: orderReferenceId,
+  //     amount: product['price'],
+  //     productID: product['id'],
+  //     userID: userID
+  //   };
+  
+  //   try {
+  //     const response = await fetch(BASE_URL + "/payment-completion", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify(payload)
+  //     });
+  
+  //     if (!response.ok) {
+  //       throw new Error(`Request failed with status ${response.status}`);
+  //     }
+  
+  //     const data = await response.json();
+  //     console.log("Payment completion response:", data);
+  //   } catch (error) {
+  //     console.error("Error completing payment:", error);
+  //   }
+  // };
+  
   const callGetCheckout = (chargeId) => {
         fetch(BASE_URL + "/getCharge?" + new URLSearchParams({ chargeId }))
         .then(res => res.json())
@@ -28,6 +66,7 @@ function CheckoutReturn(props) {
           console.log("30 seconds")
           if(res.statusDetails.state==="Authorized")
           {
+            // completePayment();
             setMessage(statusMessageMap["Completed"]);
             setIsLoading(false);
           }
@@ -46,9 +85,20 @@ function CheckoutReturn(props) {
         
   }
   useEffect(() => {
-    fetch(BASE_URL + "/completeCheckoutSession?" + new URLSearchParams({ checkoutSessionId }))
-      .then((res) => res.json())
-      .then((res) => {
+    const productID = product["id"];
+    const merchantReferenceId = orderInfo["merchantReferenceId"]
+    console.log("productID >>>>>>>>>>> ", productID);
+    fetch(BASE_URL + "/completeCheckoutSession?" + new URLSearchParams({ checkoutSessionId, userID, productID, merchantReferenceId}))
+      .then(res => {
+        console.log(res);
+        // Extract relevant data from the response
+        const chargeInfo = {
+          chargeId : res.chargeId,
+          chargePermissionId : res.chargePermissionId,
+        }
+        localStorage.setItem("chargeInfo", chargeInfo);
+      })
+      .then(() => {
 
         fetch(BASE_URL + "/getCheckoutSession?" + new URLSearchParams({ checkoutSessionId }))
         .then(res => res.json())
@@ -62,7 +112,6 @@ function CheckoutReturn(props) {
             setText("Please try again with a new Payment method");
           
             setIsLoading(false);
-
           }
         });
       })

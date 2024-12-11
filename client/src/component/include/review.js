@@ -14,9 +14,6 @@ function Review(props) {
   const [paymentMethod, setPaymentMethod] = useState({});
   const [product, setProduct] = useState(null);
   const BASE_URL = "http://localhost:3001";
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(price);
-  };
 
   useEffect(() => {
     // Fetch product from localStorage
@@ -60,6 +57,17 @@ function Review(props) {
       .then((res) => res.json())
       .then((res) => {
         console.log(res);
+        const orderInfo = {
+          merchantReferenceId : res.merchantMetadata.merchantReferenceId,
+          chargeAmount : res.paymentDetails.chargeAmount.amount,
+          billingAddress : res.billingAddress,
+          paymentMethod : res.paymentMethod,
+          shippingAddress : res.shippingAddress
+        }
+        console.log("orderInfo   >>>>>>>>>>>>>>>>>>>>>    ", orderInfo);
+
+        localStorage.setItem("orderInfo", JSON.stringify(orderInfo));
+
         window.location.href = res.webCheckoutDetails.amazonPayRedirectUrl;
       })
       .catch((err) => {
@@ -134,7 +142,7 @@ function Review(props) {
                 variant="contained"
                 color="info"
                 onClick={updateCheckout}
-                sx={{float:"right"}}
+                sx={{float:"right", marginTop:"10px"}}
               >
                 Confirm Checkout
               </Button>
