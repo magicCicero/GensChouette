@@ -156,7 +156,7 @@ export default function ProductDetail() {
               {displayText[product.matchType]} ・ {displayText[product.casual]}
             </Typography>
             <Typography sx={{ ...styles.intro }}>{product.intro}</Typography>
-            <QuantityInput/>
+            {/* <QuantityInput/> */}
 
             <Box sx={{ ...styles.footer }}>
               {validAmount && 
