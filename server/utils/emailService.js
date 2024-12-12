@@ -8,35 +8,50 @@ const transporter = nodemailer.createTransport({
   service: "gmail",  
   auth: {
     user: process.env.EMAIL_USER,  
-    pass: process.env.EMAIL_PASS,   // Replace with your email password or app-specific password
+    pass: process.env.EMAIL_PASS,   
   },
 });
 
 // Function to send email
-const sendEmailNotification = async (orderReferenceId, amount, productID) => {  // Make the function async
+const sendEmailNotification = async (orderReferenceId, amount, productID, userID) => {  
   try {
     // Step 1: Fetch customerID from productTable using productID
     const productQuery = 'SELECT userID FROM product WHERE id = ?';
-    const productResult = await runQuery(productQuery, [productID]);
+    const connect = await runQuery();
+    const productResult = await connect.query(productQuery, [productID]);
+    console.log( "<<<<<<<<< productResult >>>>>>>>>>", productResult);
+    console.log( "<<<<<<<<< productResult[0].userID >>>>>>>>>>", productResult[0][0].userID);
 
     if (productResult.length === 0) {
       throw new Error('Product not found');
     }
-    const customerID = productResult[0].userID;
+    const sellerID = productResult[0][0].userID;
+    
+    console.log( "<<<<<<<<< sellerID >>>>>>>>>>", sellerID);
 
-    // Step 2: Fetch customerName and customerEmail from customerTable using customerID
-    const customerQuery = 'SELECT name, email FROM user WHERE id = ?';
-    const customerResult = await runQuery(customerQuery, [customerID]);
+    // Step 2: Fetch sellerName and sellerEmail from sellerTable using sellerID
+    const sellerQuery = 'SELECT name, email FROM user WHERE id = ?';
+    const sellerResult = await connect.query(sellerQuery, [sellerID]);
 
-    if (customerResult.length === 0) {
-      throw new Error('Customer not found');
+    if (sellerResult.length === 0) {
+      throw new Error('seller not found');
     }
-    const { name, email } = customerResult[0]; // customerName and customerEmail -> seller not buyer
+    const { name, email } = sellerResult[0];
 
-    // Step 3: Prepare the email content
+    // Step 3: Fetch buyer from userTable using userID
+    // const buyerQuery = 'SELECT name, email FROM user WHERE id = ?';
+    // const buyerResult = await runQuery(buyerQuery, [userID]);
+
+    // if (buyerResult.length === 0) {
+      // throw new Error('buyer not found');
+    // }
+    // const buyerName = buyerResult[0].name;
+    // const buyerEmail = buyerResult[0].email;
+
+    // Step 4: Prepare the email content
     const mailOptions = {
       from: process.env.EMAIL_USER,  
-      to: process.env.EMAIL_ADMIN,  // Admin email
+      to: process.env.EMAIL_ADMIN, 
       subject: `Payment Successful: Order #${orderReferenceId}`,
       text: `Dear Admin,
 
@@ -46,9 +61,13 @@ const sendEmailNotification = async (orderReferenceId, amount, productID) => {  
         Amount Paid: ¥${amount} JPY
         Payment Status: SUCCESS
 
-        Customer Information:
+        Seller Information:
         - Name: ${name}
         - Email: ${email}
+
+        Buyer Information:
+        - Name: Ishida Mei 
+        - Email: mobileengineer8954@gmail.com
 
         Please review the order and take the necessary action to process the shipment.
 

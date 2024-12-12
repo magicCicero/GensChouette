@@ -22,6 +22,17 @@ function Review(props) {
       setProduct(JSON.parse(storedProduct));
       console.log("Product loaded from localStorage:", JSON.parse(storedProduct));
     }
+
+    fetch(BASE_URL + 
+      '/setCheckoutSessionId', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        checkoutSessionId: checkoutSessionId
+      })
+    });
     
     fetch(BASE_URL + 
       '/getCheckoutSession?' + new URLSearchParams({ checkoutSessionId }),

@@ -20,44 +20,45 @@ function CheckoutReturn(props) {
   const params = new URLSearchParams(search);
   const checkoutSessionId = params.get('amazonCheckoutSessionId');
   const BASE_URL = "http://localhost:3001";
-  const product = localStorage.getItem("selectedProduct");
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+  console.log("product >>>>>>> ", product);
+  const productID = product["id"];
+  console.log(productID, "<<<<<<< productID");
   const orderInfo = localStorage.getItem("orderInfo");
   console.log("orderInfo  >>>>>>>>>>>>>>>>>>  ", orderInfo)
   // const product = JSON.parse(productString); // Parse the string into an object
   // const orderInfo = JSON.parse(orderInfoString);
 
-  console.log("product >>>>>>> ", product);
   const userID = Cookies.get('userID');
+  console.log(userID, "<<<<<<< userID");
 
-  // const completePayment = async () => {
-  //   // create order id
-  //   const orderReferenceId = uuidv4();
-  //   const payload = {
-  //     orderReferenceId: orderReferenceId,
-  //     amount: product['price'],
-  //     productID: product['id'],
-  //     userID: userID
-  //   };
+  const completePayment = async () => {
+    const payload = {
+      amount: product['price'],
+      productID: product['id'],
+      userID: userID
+    };
+    console.log("<<<<<<<<<<<<< payload for completepayment >>>>>>>>>>>>>>>>", payload);
   
-  //   try {
-  //     const response = await fetch(BASE_URL + "/payment-completion", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json"
-  //       },
-  //       body: JSON.stringify(payload)
-  //     });
+    try {
+      const response = await fetch(BASE_URL + "/payment-completion", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
   
-  //     if (!response.ok) {
-  //       throw new Error(`Request failed with status ${response.status}`);
-  //     }
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
   
-  //     const data = await response.json();
-  //     console.log("Payment completion response:", data);
-  //   } catch (error) {
-  //     console.error("Error completing payment:", error);
-  //   }
-  // };
+      const data = await response.json();
+      console.log("Payment completion response:", data);
+    } catch (error) {
+      console.error("Error completing payment:", error);
+    }
+  };
   
   const callGetCheckout = (chargeId) => {
         fetch(BASE_URL + "/getCharge?" + new URLSearchParams({ chargeId }))
@@ -66,7 +67,7 @@ function CheckoutReturn(props) {
           console.log("30 seconds")
           if(res.statusDetails.state==="Authorized")
           {
-            // completePayment();
+            completePayment();
             setMessage(statusMessageMap["Completed"]);
             setIsLoading(false);
           }

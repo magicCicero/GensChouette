@@ -28,7 +28,7 @@ export default function ProductDetail() {
       const res = await axiosData("/getProductByProductID", { id: productID });
       console.log(res, "<<<<<<<<<< res");
       setProduct(res[0]);
-      setAmount(res[0].price); // Assuming the price is in the response
+      setAmount(res[0].price);
     } catch (error) {
       console.error("Error fetching product:", error);
       toast.error('商品の情報を取得できませんでした。'); // Failed to fetch product details
