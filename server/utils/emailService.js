@@ -53,7 +53,7 @@ const sendEmailNotification = async (orderReferenceId, amount, productID, userID
       from: process.env.EMAIL_USER,  
       to: process.env.EMAIL_ADMIN, 
       subject: `支払い完了: 注文 #${orderReferenceId}`,
-      text: `管理者様,
+      text: `管理者様より,
 
        次の注文の支払いが正常に処理されました:
 
@@ -69,7 +69,7 @@ const sendEmailNotification = async (orderReferenceId, amount, productID, userID
         - 名前: 石田芽衣 
         - メール: mobileengineer8954@gmail.com
 
-        ありがとう,
+        ありがとうございます,
         Amazon Pay統合開発者`
     };
 
