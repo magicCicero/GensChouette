@@ -52,27 +52,25 @@ const sendEmailNotification = async (orderReferenceId, amount, productID, userID
     const mailOptions = {
       from: process.env.EMAIL_USER,  
       to: process.env.EMAIL_ADMIN, 
-      subject: `Payment Successful: Order #${orderReferenceId}`,
-      text: `Dear Admin,
+      subject: `支払い完了: 注文 #${orderReferenceId}`,
+      text: `管理者様,
 
-        A payment has been successfully processed for the following order:
+       次の注文の支払いが正常に処理されました:
 
-        Order Reference ID: ${orderReferenceId}
-        Amount Paid: ¥${amount} JPY
-        Payment Status: SUCCESS
+        注文参照ID: ${orderReferenceId}
+        支払った金額: ¥${amount} JPY
+        支払いステータス: 成功
 
-        Seller Information:
-        - Name: ${name}
-        - Email: ${email}
+        販売者情報:
+        - 名前: ${name}
+        - メール: ${email}
 
-        Buyer Information:
-        - Name: Ishida Mei 
-        - Email: mobileengineer8954@gmail.com
+        購入者情報:
+        - 名前: 石田芽衣 
+        - メール: mobileengineer8954@gmail.com
 
-        Please review the order and take the necessary action to process the shipment.
-
-        Thank you,
-        Your Amazon Pay System`
+        ありがとう,
+        Amazon Pay統合開発者`
     };
 
     // Send the email
